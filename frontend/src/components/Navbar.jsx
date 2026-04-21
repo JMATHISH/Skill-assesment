@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '../ThemeContext';
-import logo from '../assets/logo.png';   // ✅ IMPORT IMAGE
 
 export default function Navbar() {
   const { isDark } = useTheme();
@@ -30,9 +29,9 @@ export default function Navbar() {
         style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
         onClick={() => navigate('/')}
       >
-        {/* ✅ FIXED IMAGE */}
+        {/* ✅ FINAL FIX */}
         <img
-          src={logo}
+          src="/logo.png"
           alt="SkillAssess Logo"
           style={{
             width: 32,
