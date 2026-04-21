@@ -107,7 +107,10 @@ export default function AdminPanel() {
         <div style={{ minHeight: '100vh', background: bg, color: text, fontFamily: "'Segoe UI',sans-serif" }}>
             <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 28px', borderBottom: `1px solid ${border}`, background: navBg, backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 100 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontWeight: 700, fontSize: 18 }}>⚡ SkillAssess</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <img src="/src/assets/logo.png" alt="Logo" style={{ width: 30, height: 30, objectFit: 'contain', filter: 'drop-shadow(0 0 8px rgba(102, 126, 234, 0.3))' }} />
+                        <span style={{ fontWeight: 700, fontSize: 18 }}>SkillAssess</span>
+                    </div>
                     <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 20, background: 'rgba(255,107,107,0.2)', color: '#ff6b6b', fontWeight: 600 }}>ADMIN</span>
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>

@@ -7,16 +7,22 @@ import History from './pages/History';
 import QuestionReview from './pages/QuestionReview';
 import Progress from './pages/Progress';
 import AdminPanel from './pages/AdminPanel';
+import Landing from './pages/Landing';
+import Menu from './pages/Menu';
+import Contact from './pages/Contact';
 
 function PrivateRoute({ children }) {
-  return localStorage.getItem('token') ? children : <Navigate to="/" />;
+  return localStorage.getItem('token') ? children : <Navigate to="/login" />;
 }
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Auth />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Auth />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/test/:topic/:difficulty" element={<PrivateRoute><TestEngine /></PrivateRoute>} />
         <Route path="/results" element={<PrivateRoute><Results /></PrivateRoute>} />

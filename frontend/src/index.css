@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 *,
 *::before,
 *::after {
@@ -8,105 +10,92 @@
 
 :root,
 [data-theme="dark"] {
-  --bg-primary: #0f0c29;
-  --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  --bg-card: rgba(255, 255, 255, 0.05);
-  --bg-card2: rgba(255, 255, 255, 0.08);
-  --bg-input: rgba(255, 255, 255, 0.08);
+  --bg-primary: #020617;
+  --bg-gradient: linear-gradient(-45deg, #09090b, #18181b, #0f172a, #040d21);
+  --bg-card: rgba(15, 23, 42, 0.4);
+  --bg-card2: rgba(30, 41, 59, 0.5);
+  --bg-input: rgba(15, 23, 42, 0.6);
   --bg-editor: rgba(0, 0, 0, 0.45);
   --bg-schema: rgba(0, 0, 0, 0.3);
-  --border: rgba(255, 255, 255, 0.12);
-  --border-light: rgba(255, 255, 255, 0.07);
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.55);
-  --text-muted: rgba(255, 255, 255, 0.35);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.04);
+  --text-primary: #f8fafc;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: #94a3b8;
   --text-code: #7fdbff;
-  --nav-bg: rgba(15, 12, 41, 0.97);
+  --nav-bg: rgba(2, 6, 23, 0.8);
   --scrollbar: rgba(255, 255, 255, 0.15);
+  --accent: #6366f1;
 }
 
 [data-theme="light"] {
-  --bg-primary: #eef0f8;
-  --bg-gradient: linear-gradient(135deg, #dde1f5, #c9cef0, #dde6f5);
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card2: rgba(255, 255, 255, 0.95);
-  --bg-input: rgba(255, 255, 255, 0.95);
+  --bg-primary: #f8fafc;
+  --bg-gradient: linear-gradient(-45deg, #f8fafc, #f1f5f9, #e2e8f0, #eef2ff);
+  --bg-card: rgba(255, 255, 255, 0.6);
+  --bg-card2: rgba(255, 255, 255, 0.8);
+  --bg-input: rgba(255, 255, 255, 0.8);
   --bg-editor: #f5f6fa;
   --bg-schema: #eef1fc;
-  --border: rgba(0, 0, 0, 0.12);
-  --border-light: rgba(0, 0, 0, 0.06);
-  --text-primary: #1a1a2e;
-  --text-secondary: rgba(0, 0, 0, 0.58);
-  --text-muted: rgba(0, 0, 0, 0.38);
+  --border: rgba(0, 0, 0, 0.06);
+  --border-light: rgba(0, 0, 0, 0.03);
+  --text-primary: #0f172a;
+  --text-secondary: rgba(0, 0, 0, 0.7);
+  --text-muted: #64748b;
   --text-code: #1565c0;
-  --nav-bg: rgba(238, 240, 248, 0.97);
+  --nav-bg: rgba(248, 250, 252, 0.8);
   --scrollbar: rgba(0, 0, 0, 0.18);
+  --accent: #4f46e5;
 }
 
 body {
-  background: var(--bg-primary);
+  background: var(--bg-gradient);
+  background-size: 400% 400%;
+  animation: MoveBg 20s ease infinite;
   color: var(--text-primary);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', sans-serif !important;
   -webkit-font-smoothing: antialiased;
-  transition: background 0.3s, color 0.25s;
+  min-height: 100vh;
+}
+
+* {
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* OVERRIDE INLINE BACKGROUNDS FOR FULL BEAUTY */
+#root > div {
+  background: transparent !important;
+}
+
+/* DYNAMIC ANIMATIONS */
+@keyframes MoveBg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes timerFlash {
-
-  0%,
-  100% {
-    opacity: 1
-  }
-
-  50% {
-    opacity: 0.25
-  }
+  0%, 100% { opacity: 1 }
+  50% { opacity: 0.25 }
 }
 
 @keyframes timerShake {
-
-  0%,
-  100% {
-    transform: translateX(0)
-  }
-
-  25% {
-    transform: translateX(-4px)
-  }
-
-  75% {
-    transform: translateX(4px)
-  }
+  0%, 100% { transform: translateX(0) }
+  25% { transform: translateX(-4px) }
+  75% { transform: translateX(4px) }
 }
 
 @keyframes timerPulse {
-
-  0%,
-  100% {
-    transform: scale(1)
-  }
-
-  50% {
-    transform: scale(1.06)
-  }
+  0%, 100% { transform: scale(1) }
+  50% { transform: scale(1.06) }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px)
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0)
-  }
+  from { opacity: 0; transform: translateY(8px) }
+  to { opacity: 1; transform: translateY(0) }
 }
 
 .timer-danger {
@@ -136,10 +125,90 @@ textarea::placeholder {
 }
 
 a {
-  color: #7fdbff;
+  color: var(--accent);
   text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
 a:hover {
   text-decoration: underline;
+  filter: brightness(1.2);
+}
+
+/* GLOBAL LUXURY STYLES - HACKS TO TARGET INLINE STYLED CARDS */
+div[style*="border-radius: 1"], 
+div[style*="border-radius: 2"],
+div[style*="backdrop-filter: blur"] {
+  backdrop-filter: blur(20px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+div[style*="border-radius: 1"]:hover, 
+div[style*="border-radius: 2"]:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1), 0 0 15px rgba(255, 255, 255, 0.03) inset !important;
+}
+
+/* Make inputs look amazing */
+input {
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05) inset;
+}
+
+input:focus {
+  transform: translateY(-2px) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25), 0 2px 8px rgba(0,0,0,0.1) inset !important;
+  background: var(--bg-card2) !important;
+}
+
+/* Make buttons pop heavily */
+button {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.1), 0 0 20px rgba(99, 102, 241, 0.35) !important;
+  filter: brightness(1.15) !important;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Smooth visual logic for all borders */
+div[style*="border: 2px"], div[style*="border: 1px"], div[style*="border: 1.5px"] {
+  will-change: transform, box-shadow;
+}
+
+nav {
+  box-shadow: 0 4px 30px -4px rgba(0, 0, 0, 0.2) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+/* Floating emojis/icons */
+div[style*="font-size: 40px"],
+div[style*="font-size: 56px"],
+div[style*="font-size: 44px"] {
+  display: inline-block;
+  animation: floatIcon 6s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px) scale(1.05); }
 }

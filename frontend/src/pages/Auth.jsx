@@ -91,9 +91,9 @@ export default function Auth() {
       <div style={{ background: cardBg, backdropFilter: 'blur(20px)', border: `1px solid ${border}`, borderRadius: 20, padding: '44px 40px', width: screen === 'role' ? 440 : 380, color: text }}>
 
         {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ fontSize: 44, marginBottom: 6 }}>⚡</div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, margin: '0 0 4px', color: text }}>SkillAssess</h1>
+        <div style={{ textAlign: 'center', marginBottom: 28, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <img src="/src/assets/logo.png" alt="SkillAssess Logo" style={{ width: 85, height: 85, objectFit: 'contain', marginBottom: 8, filter: 'drop-shadow(0 0 15px rgba(102, 126, 234, 0.5))' }} />
+          <h1 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 4px', color: text }}>SkillAssess</h1>
           <p style={{ fontSize: 13, color: muted, margin: 0 }}>Placement readiness platform</p>
         </div>
 

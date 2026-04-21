@@ -35,7 +35,10 @@ export default function Dashboard() {
   return (
     <div style={{ minHeight: '100vh', background: bg, fontFamily: "'Segoe UI',sans-serif", color: text }}>
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 28px', borderBottom: `1px solid ${navBdr}`, background: navBg, backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <span style={{ fontWeight: 700, fontSize: 18 }}>⚡ SkillAssess</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <img src="/src/assets/logo.png" alt="Logo" style={{ width: 30, height: 30, objectFit: 'contain', filter: 'drop-shadow(0 0 8px rgba(102, 126, 234, 0.3))' }} />
+          <span style={{ fontWeight: 700, fontSize: 18 }}>SkillAssess</span>
+        </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <ThemeToggle />
           <button style={gBtn(isDark, text)} onClick={() => navigate('/progress')}>📈 Progress</button>
