@@ -1,3 +1,5 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';  // ✅ ADD THIS
+
 import Auth from './pages/Auth.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import TestEngine from './pages/TestEngine.jsx';
