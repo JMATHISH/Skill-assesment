@@ -29,15 +29,13 @@ export default function Navbar() {
         style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
         onClick={() => navigate('/')}
       >
-        {/* ✅ FINAL FIX */}
         <img
           src="/logo.png"
           alt="SkillAssess Logo"
           style={{
             width: 40,
             height: 40,
-            objectFit: 'contain',
-            display: 'block'
+            background: "red"
           }}
         />
         <span style={{ fontWeight: 800, fontSize: 20, color: text, letterSpacing: '-0.5px' }}>
