@@ -1,15 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Auth from './pages/Auth';
-import Dashboard from './pages/Dashboard';
-import TestEngine from './pages/TestEngine';
-import Results from './pages/Results';
-import History from './pages/History';
-import QuestionReview from './pages/QuestionReview';
-import Progress from './pages/Progress';
-import AdminPanel from './pages/AdminPanel';
-import Landing from './pages/Landing';
-import Menu from './pages/Menu';
-import Contact from './pages/Contact';
+import Auth from './pages/Auth.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import TestEngine from './pages/TestEngine.jsx';
+import Results from './pages/Results.jsx';
+import History from './pages/History.jsx';
+import QuestionReview from './pages/QuestionReview.jsx';
+import Progress from './pages/Progress.jsx';
+import AdminPanel from './pages/AdminPanel.jsx';
+import Landing from './pages/Landing.jsx';
+import Menu from './pages/Menu.jsx';
+import Contact from './pages/Contact.jsx';
 
 function PrivateRoute({ children }) {
   return localStorage.getItem('token') ? children : <Navigate to="/login" />;
