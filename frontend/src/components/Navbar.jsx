@@ -34,10 +34,10 @@ export default function Navbar() {
           src="/logo.png"
           alt="SkillAssess Logo"
           style={{
-            width: 32,
-            height: 32,
+            width: 40,
+            height: 40,
             objectFit: 'contain',
-            filter: 'drop-shadow(0 0 8px rgba(102, 126, 234, 0.4))'
+            display: 'block'
           }}
         />
         <span style={{ fontWeight: 800, fontSize: 20, color: text, letterSpacing: '-0.5px' }}>
