@@ -33,9 +33,11 @@ export default function Navbar() {
           src="/logo.png"
           alt="SkillAssess Logo"
           style={{
-            width: 40,
-            height: 40,
-            background: "red"
+            width: "40px",
+            height: "40px",
+            display: "block",
+            border: "2px solid red",   // 🔥 debug border
+            backgroundColor: "white"   // 🔥 force visibility
           }}
         />
         <span style={{ fontWeight: 800, fontSize: 20, color: text, letterSpacing: '-0.5px' }}>
