@@ -10,20 +10,16 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 
-// ✅ STRONG CORS FIX (FINAL)
+// ✅ CORS (FIXED)
 app.use(cors({
   origin: 'https://skill-assesment-five.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 
-// ✅ IMPORTANT (handles preflight requests)
-app.options('*', cors());
-
-// Middleware
 app.use(express.json());
 
-// Health check
+// ✅ HEALTH CHECK
 app.get('/', (req, res) => {
   res.send('Backend is running 🚀');
 });
