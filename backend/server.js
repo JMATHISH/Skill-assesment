@@ -10,34 +10,26 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 
-// ✅ CORS FIX (IMPORTANT)
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://skill-assesment-five.vercel.app'
-];
-
+// ✅ STRONG CORS FIX (FINAL)
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like Postman)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed'));
-    }
-  },
+  origin: 'https://skill-assesment-five.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+
+// ✅ IMPORTANT (handles preflight requests)
+app.options('*', cors());
 
 // Middleware
 app.use(express.json());
 
-// ✅ OPTIONAL: HEALTH CHECK ROUTE
+// Health check
 app.get('/', (req, res) => {
   res.send('Backend is running 🚀');
 });
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/skillassessment')
+// MongoDB
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.log('❌ MongoDB error:', err));
 
@@ -47,9 +39,8 @@ app.use('/api/test', testRoutes);
 app.use('/api/result', resultRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Server start
+// Server
 const PORT = process.env.PORT || 5001;
-
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
