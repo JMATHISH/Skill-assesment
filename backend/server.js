@@ -11,12 +11,13 @@ const adminRoutes = require('./routes/admin');
 const app = express();
 
 // ✅ CORS (FIXED)
+const cors = require('cors');
+
 app.use(cors({
-  origin: 'https://skill-assesment-five.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: '*',   // ✅ TEMP allow all (for testing)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
 }));
-
 app.use(express.json());
 
 // ✅ HEALTH CHECK
