@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',   // ✅ FIXED
+  baseURL: 'https://skill-assessment-1-74s0.onrender.com/api'  // ✅ FIXED
 });
 
 api.interceptors.request.use((config) => {
