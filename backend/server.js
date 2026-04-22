@@ -10,16 +10,24 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/skillassessment')
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.log('❌ MongoDB error:', err));
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/result', resultRoutes);
 app.use('/api/admin', adminRoutes);
 
-module.exports = app;   // ✅ IMPORTANT
+// ✅ ADD THIS (VERY IMPORTANT)
+const PORT = process.env.PORT || 5001;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
