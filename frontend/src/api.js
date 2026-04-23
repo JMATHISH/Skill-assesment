@@ -1,9 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://skill-assessment-1-74s0.onrender.com/api'  // ✅ FIXED
+  baseURL: 'https://skill-assesment-1-74s0.onrender.com/api'
 });
-
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
