@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -10,20 +11,14 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 
-// ✅ CORS (FIXED)
-const cors = require('cors');
-
+// ✅ CORS (ONLY ONCE)
 app.use(cors({
-  origin: '*',   // ✅ TEMP allow all (for testing)
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
-app.use(express.json());
 
-// ✅ HEALTH CHECK
-app.get('/', (req, res) => {
-  res.send('Backend is running 🚀');
-});
+// Middleware
+app.use(express.json());
 
 // MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -36,8 +31,14 @@ app.use('/api/test', testRoutes);
 app.use('/api/result', resultRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Server
-const PORT = process.env.PORT || 5001;
+// Root check (optional but useful)
+app.get('/', (req, res) => {
+  res.send('Backend running 🚀');
+});
+
+// ✅ PORT (VERY IMPORTANT)
+const PORT = process.env.PORT || 10000;
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
