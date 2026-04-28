@@ -61,9 +61,24 @@ exports.runSQL = async (req, res) => {
     const question = await Question.findById(questionId);
     if (!question) return res.status(404).json({ message: 'Question not found' });
 
-    const Database = require('better-sqlite3');
-    const db = new Database(':memory:');
-    if (question.starterCode) db.exec(question.starterCode);
+    // Use sql.js (pure JS SQLite — works on all platforms including Render/Linux)
+    const initSqlJs = require('sql.js');
+    const SQL = await initSqlJs();
+    const db = new SQL.Database();
+
+    if (question.starterCode) db.run(question.starterCode);
+
+    // Helper: run a query and return array of row objects
+    function runQuery(sql) {
+      const results = db.exec(sql);
+      if (!results || results.length === 0) return [];
+      const { columns, values } = results[0];
+      return values.map(row => {
+        const obj = {};
+        columns.forEach((col, i) => { obj[col] = row[i]; });
+        return obj;
+      });
+    }
 
     // Run exact matching first
     const exactResults = [];
@@ -73,13 +88,13 @@ exports.runSQL = async (req, res) => {
       try {
         let userResult;
         try {
-          userResult = db.prepare(userQuery).all();
+          userResult = runQuery(userQuery);
         } catch (e) {
           exactResults.push({ description: tc.description, passed: false, error: e.message, expected: tc.expectedOutput, got: null });
           allExactPassed = false;
           continue;
         }
-        const expectedResult = db.prepare(tc.expectedOutput).all();
+        const expectedResult = runQuery(tc.expectedOutput);
         const passed = JSON.stringify(userResult) === JSON.stringify(expectedResult);
         if (!passed) allExactPassed = false;
         exactResults.push({ description: tc.description, passed, expected: JSON.stringify(expectedResult), got: JSON.stringify(userResult) });
