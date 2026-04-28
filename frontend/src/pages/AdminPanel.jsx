@@ -107,10 +107,7 @@ export default function AdminPanel() {
         <div style={{ minHeight: '100vh', background: bg, color: text, fontFamily: "'Segoe UI',sans-serif" }}>
             <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 28px', borderBottom: `1px solid ${border}`, background: navBg, backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 100 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <img src="/src/assets/logo.png" alt="Logo" style={{ width: 30, height: 30, objectFit: 'contain', filter: 'drop-shadow(0 0 8px rgba(102, 126, 234, 0.3))' }} />
-                        <span style={{ fontWeight: 700, fontSize: 18 }}>SkillAssess</span>
-                    </div>
+                    <span style={{ fontWeight: 700, fontSize: 18 }}>⚡ SkillAssess</span>
                     <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 20, background: 'rgba(255,107,107,0.2)', color: '#ff6b6b', fontWeight: 600 }}>ADMIN</span>
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
@@ -326,34 +323,54 @@ export default function AdminPanel() {
 }
 
 function QuestionForm({ q, onSave, onCancel, isDark, text, muted, border, inp }) {
+    const initTestCases = q?.testCases?.length
+        ? q.testCases.map(tc => ({ description: tc.description || '', input: typeof tc.input === 'string' ? tc.input : JSON.stringify(tc.input), expectedOutput: tc.expectedOutput || '' }))
+        : [{ description: '', input: '', expectedOutput: '' }];
+
     const [form, setForm] = useState({
         topic: q?.topic || 'aptitude', type: q?.type || 'mcq', difficulty: q?.difficulty || 'easy',
         question: q?.question || '', options: q?.options?.join('\n') || '', correctAnswer: q?.correctAnswer || '',
         starterCode: q?.starterCode || '', explanation: q?.explanation || '',
     });
+    const [testCases, setTestCases] = useState(initTestCases);
     const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
+    const setTC = (i, field, val) => setTestCases(prev => prev.map((tc, idx) => idx === i ? { ...tc, [field]: val } : tc));
+    const addTC = () => setTestCases(p => [...p, { description: '', input: '', expectedOutput: '' }]);
+    const removeTC = (i) => setTestCases(p => p.filter((_, idx) => idx !== i));
 
     function handleSubmit(e) {
         e.preventDefault();
         const data = { ...form };
-        if (form.type === 'mcq') data.options = form.options.split('\n').map(o => o.trim()).filter(Boolean);
+        if (form.type === 'mcq') {
+            data.options = form.options.split('\n').map(o => o.trim()).filter(Boolean);
+        } else {
+            data.testCases = testCases.filter(tc => tc.description || tc.expectedOutput).map(tc => ({
+                description: tc.description,
+                input: tc.input,
+                expectedOutput: tc.expectedOutput,
+            }));
+        }
         onSave(data);
     }
+
+    const isSQLorDSA = form.type === 'sql' || form.type === 'code';
+    const tcBg = isDark ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.03)';
+    const tcBdr = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
 
     return (
         <form onSubmit={handleSubmit} style={{ background: isDark ? 'rgba(102,126,234,0.1)' : 'rgba(102,126,234,0.06)', border: '1px solid rgba(102,126,234,0.3)', borderRadius: 14, padding: '22px', marginBottom: 20 }}>
             <h3 style={{ margin: '0 0 16px', fontSize: 17, fontWeight: 700, color: text }}>{q ? 'Edit Question' : 'Add New Question'}</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
                 <div><label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>Topic</label>
-                    <select style={{ ...inp, width: 'auto' }} value={form.topic} onChange={e => set('topic', e.target.value)}>
+                    <select style={{ ...inp, width: '100%' }} value={form.topic} onChange={e => set('topic', e.target.value)}>
                         {['aptitude', 'dsa', 'sql', 'networks'].map(t => <option key={t}>{t}</option>)}
                     </select></div>
                 <div><label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>Type</label>
-                    <select style={{ ...inp, width: 'auto' }} value={form.type} onChange={e => set('type', e.target.value)}>
+                    <select style={{ ...inp, width: '100%' }} value={form.type} onChange={e => set('type', e.target.value)}>
                         {['mcq', 'code', 'sql'].map(t => <option key={t}>{t}</option>)}
                     </select></div>
                 <div><label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>Difficulty</label>
-                    <select style={{ ...inp, width: 'auto' }} value={form.difficulty} onChange={e => set('difficulty', e.target.value)}>
+                    <select style={{ ...inp, width: '100%' }} value={form.difficulty} onChange={e => set('difficulty', e.target.value)}>
                         {['easy', 'medium', 'hard'].map(d => <option key={d}>{d}</option>)}
                     </select></div>
             </div>
@@ -367,26 +384,82 @@ function QuestionForm({ q, onSave, onCancel, isDark, text, muted, border, inp })
                     <textarea style={{ ...inp, minHeight: 80, resize: 'vertical' }} value={form.options} onChange={e => set('options', e.target.value)} />
                 </div>
                 <div style={{ marginBottom: 12 }}>
-                    <label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>Correct Answer</label>
+                    <label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>Correct Answer (must match one option exactly)</label>
                     <input style={inp} value={form.correctAnswer} onChange={e => set('correctAnswer', e.target.value)} />
                 </div>
             </>}
-            {(form.type === 'code' || form.type === 'sql') && (
+            {isSQLorDSA && (
                 <div style={{ marginBottom: 12 }}>
-                    <label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>Starter Code / Table Setup</label>
-                    <textarea style={{ ...inp, minHeight: 100, fontFamily: 'monospace', resize: 'vertical' }} value={form.starterCode} onChange={e => set('starterCode', e.target.value)} />
+                    <label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>
+                        {form.type === 'sql' ? 'Table Setup SQL (CREATE TABLE + INSERT statements)' : 'Starter Code'}
+                    </label>
+                    <textarea style={{ ...inp, minHeight: 110, fontFamily: 'monospace', fontSize: 12, resize: 'vertical' }} value={form.starterCode} onChange={e => set('starterCode', e.target.value)} />
+                </div>
+            )}
+            {isSQLorDSA && (
+                <div style={{ marginBottom: 14 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <div>
+                            <label style={{ fontSize: 13, color: text, fontWeight: 600, display: 'block' }}>
+                                {form.type === 'sql' ? 'Test Cases — Write the correct SQL answer for each' : 'Test Cases'}
+                            </label>
+                            <span style={{ fontSize: 11, color: muted }}>
+                                {form.type === 'sql'
+                                    ? 'Backend runs your query + student query and compares results. Write the correct SELECT query in Expected Output.'
+                                    : 'Input is passed to solve(). Expected Output is the return value as a JSON string e.g. "15" or "[0,1]"'}
+                            </span>
+                        </div>
+                        <button type="button"
+                            style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(67,233,123,0.4)', background: 'rgba(67,233,123,0.1)', color: '#43e97b', cursor: 'pointer', fontSize: 12, fontWeight: 600, flexShrink: 0, marginLeft: 12 }}
+                            onClick={addTC}>+ Add Test Case</button>
+                    </div>
+                    {testCases.map((tc, i) => (
+                        <div key={i} style={{ background: tcBg, border: `1px solid ${tcBdr}`, borderRadius: 10, padding: 14, marginBottom: 10 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: '#667eea' }}>Test Case {i + 1}</span>
+                                {testCases.length > 1 && (
+                                    <button type="button" style={{ padding: '3px 10px', borderRadius: 6, border: '1px solid rgba(255,107,107,0.4)', background: 'rgba(255,107,107,0.1)', color: '#ff6b6b', cursor: 'pointer', fontSize: 11 }} onClick={() => removeTC(i)}>Remove</button>
+                                )}
+                            </div>
+                            <div style={{ marginBottom: 8 }}>
+                                <label style={{ fontSize: 11, color: muted, display: 'block', marginBottom: 3 }}>Description</label>
+                                <input style={{ ...inp, fontSize: 13 }} placeholder="e.g. Should return all employee names" value={tc.description} onChange={e => setTC(i, 'description', e.target.value)} />
+                            </div>
+                            {form.type === 'sql' ? (
+                                <div>
+                                    <label style={{ fontSize: 11, color: '#43e97b', display: 'block', marginBottom: 3, fontWeight: 600 }}>Correct SQL Answer Query</label>
+                                    <textarea
+                                        style={{ ...inp, minHeight: 60, fontFamily: 'monospace', fontSize: 13, borderColor: 'rgba(67,233,123,0.5)', resize: 'vertical' }}
+                                        placeholder="SELECT name FROM employees;"
+                                        value={tc.expectedOutput}
+                                        onChange={e => setTC(i, 'expectedOutput', e.target.value)} />
+                                    <p style={{ margin: '3px 0 0', fontSize: 10, color: muted }}>This is your answer key. Backend runs this query and compares its output with the student query output.</p>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                    <div>
+                                        <label style={{ fontSize: 11, color: muted, display: 'block', marginBottom: 3 }}>Input (passed to solve())</label>
+                                        <input style={{ ...inp, fontFamily: 'monospace', fontSize: 13 }} placeholder='[1,2,3] or 5' value={tc.input} onChange={e => setTC(i, 'input', e.target.value)} />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: 11, color: '#43e97b', display: 'block', marginBottom: 3, fontWeight: 600 }}>Expected Output (JSON string)</label>
+                                        <input style={{ ...inp, fontFamily: 'monospace', fontSize: 13, borderColor: 'rgba(67,233,123,0.5)' }} placeholder='"15" or "[0,1]"' value={tc.expectedOutput} onChange={e => setTC(i, 'expectedOutput', e.target.value)} />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
             )}
             <div style={{ marginBottom: 16 }}>
-                <label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>Explanation</label>
-                <input style={inp} value={form.explanation} onChange={e => set('explanation', e.target.value)} />
+                <label style={{ fontSize: 12, color: muted, display: 'block', marginBottom: 4 }}>Explanation (shown after student submits)</label>
+                <input style={inp} placeholder="Brief explanation of the correct answer..." value={form.explanation} onChange={e => set('explanation', e.target.value)} />
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-                <button type="submit" style={{ padding: '9px 24px', borderRadius: 8, border: 'none', background: 'linear-gradient(90deg,#667eea,#764ba2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 14 }}>{q ? 'Update' : 'Create'}</button>
+                <button type="submit" style={{ padding: '9px 24px', borderRadius: 8, border: 'none', background: 'linear-gradient(90deg,#667eea,#764ba2)', color: '#fff', fontWeight: 600, cursor: 'pointer', fontSize: 14 }}>{q ? 'Update Question' : 'Create Question'}</button>
                 <button type="button" style={{ padding: '9px 16px', borderRadius: 8, border: `1px solid ${border}`, background: 'transparent', color: text, cursor: 'pointer', fontSize: 14 }} onClick={onCancel}>Cancel</button>
             </div>
         </form>
     );
 }
-
 const gBtn = (isDark, text) => ({ padding: '7px 14px', borderRadius: 8, border: `1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'}`, background: 'transparent', color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)', cursor: 'pointer', fontSize: 13 });
