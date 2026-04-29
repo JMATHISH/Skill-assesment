@@ -139,7 +139,14 @@ exports.runSQL = async (req, res) => {
 
 // ── Language Runners ───────────────────────────────────────────────────────
 function runJavaScript(userCode, input) {
-  const sandbox = { input, output: undefined, console: { log: () => { } } };
+  // Parse JSON string into actual JS value (array, object, number etc.)
+  let parsedInput;
+  try {
+    parsedInput = typeof input === 'string' ? JSON.parse(input) : input;
+  } catch (e) {
+    parsedInput = input;
+  }
+  const sandbox = { input: parsedInput, output: undefined, console: { log: () => { } } };
   const script = new vm.Script(`${userCode}\noutput = solve(input);`);
   vm.createContext(sandbox);
   script.runInContext(sandbox, { timeout: 3000 });
