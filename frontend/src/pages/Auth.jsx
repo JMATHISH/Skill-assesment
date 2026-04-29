@@ -39,7 +39,6 @@ export default function Auth() {
       const body = isLogin ? { email, password } : { email, password, adminKey: role === 'admin' ? adminKey : undefined };
       const { data } = await api.post(endpoint, body);
 
-      // Role mismatch checks
       if (role === 'admin' && !data.isAdmin) {
         setError('This account does not have admin privileges. Please use a valid admin key when registering.'); setLoading(false); return;
       }
@@ -90,14 +89,14 @@ export default function Auth() {
 
       <div style={{ background: cardBg, backdropFilter: 'blur(20px)', border: `1px solid ${border}`, borderRadius: 20, padding: '44px 40px', width: screen === 'role' ? 440 : 380, color: text }}>
 
-        {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: 28, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <img src="/src/assets/logo.png" alt="SkillAssess Logo" style={{ width: 85, height: 85, objectFit: 'contain', marginBottom: 8, filter: 'drop-shadow(0 0 15px rgba(102, 126, 234, 0.5))' }} />
+        {/* Logo — emoji based, works on all platforms */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ fontSize: 52, marginBottom: 8, lineHeight: 1 }}>⚡</div>
           <h1 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 4px', color: text }}>SkillAssess</h1>
           <p style={{ fontSize: 13, color: muted, margin: 0 }}>Placement readiness platform</p>
         </div>
 
-        {/* ── Role Picker ── */}
+        {/* Role Picker */}
         {screen === 'role' && (
           <>
             <p style={{ textAlign: 'center', color: muted, fontSize: 14, marginBottom: 22 }}>Who are you? Select your role to continue.</p>
@@ -123,10 +122,9 @@ export default function Auth() {
           </>
         )}
 
-        {/* ── Login / Register ── */}
+        {/* Login / Register */}
         {screen === 'auth' && (
           <>
-            {/* Role badge + change */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <span style={{ fontSize: 13, padding: '4px 12px', borderRadius: 20, background: isAdminRole ? 'rgba(255,107,107,0.15)' : 'rgba(102,126,234,0.15)', color: isAdminRole ? '#ff6b6b' : '#667eea', fontWeight: 600 }}>
                 {isAdminRole ? '🛡️ Admin / Faculty' : '🎓 Student'}
@@ -134,43 +132,29 @@ export default function Auth() {
               <button style={{ ...btnG, fontSize: 12, color: muted }} onClick={() => { setScreen('role'); setError(''); }}>← Change role</button>
             </div>
 
-            {/* Tabs — students only */}
-            {!isAdminRole && (
-              <div style={{ display: 'flex', background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)', borderRadius: 10, padding: 4, marginBottom: 18 }}>
-                {['Login', 'Register'].map((tab, i) => {
-                  const active = (i === 0) === isLogin;
-                  return <button key={tab} style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: active ? (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(102,126,234,0.15)') : 'transparent', color: active ? text : muted, transition: 'all 0.2s' }} onClick={() => { setIsLogin(i === 0); setError(''); }}>{tab}</button>;
-                })}
-              </div>
-            )}
-
-            {isAdminRole && (
-              <div style={{ display: 'flex', background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)', borderRadius: 10, padding: 4, marginBottom: 18 }}>
-                {['Login', 'Register'].map((tab, i) => {
-                  const active = (i === 0) === isLogin;
-                  return <button key={tab} style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: active ? 'rgba(255,107,107,0.2)' : 'transparent', color: active ? '#ff6b6b' : muted, transition: 'all 0.2s' }} onClick={() => { setIsLogin(i === 0); setError(''); }}>{tab}</button>;
-                })}
-              </div>
-            )}
+            <div style={{ display: 'flex', background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)', borderRadius: 10, padding: 4, marginBottom: 18 }}>
+              {['Login', 'Register'].map((tab, i) => {
+                const active = (i === 0) === isLogin;
+                return (
+                  <button key={tab} style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 500, background: active ? (isAdminRole ? 'rgba(255,107,107,0.2)' : (isDark ? 'rgba(255,255,255,0.15)' : 'rgba(102,126,234,0.15)')) : 'transparent', color: active ? (isAdminRole ? '#ff6b6b' : text) : muted, transition: 'all 0.2s' }}
+                    onClick={() => { setIsLogin(i === 0); setError(''); }}>{tab}</button>
+                );
+              })}
+            </div>
 
             <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <input style={inp} type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} required />
               <input style={inp} type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-
-              {/* Admin key field — only for admin registration */}
               {isAdminRole && !isLogin && (
                 <div>
                   <input style={{ ...inp, borderColor: 'rgba(255,107,107,0.4)' }} type="password" placeholder="Admin Secret Key" value={adminKey} onChange={e => setAdminKey(e.target.value)} required />
                   <p style={{ margin: '4px 0 0', fontSize: 11, color: 'rgba(255,107,107,0.7)' }}>🔐 Contact your faculty for the admin secret key</p>
                 </div>
               )}
-
               {error && <p style={{ color: '#ff6b6b', fontSize: 13, margin: 0 }}>{error}</p>}
-
               <button style={btnP(isAdminRole ? '#ff6b6b,#ee0979' : '#667eea,#764ba2')} type="submit" disabled={loading}>
                 {loading ? 'Please wait...' : isAdminRole ? (isLogin ? 'Login as Admin →' : 'Register as Admin →') : (isLogin ? 'Login →' : 'Create Account →')}
               </button>
-
               {isLogin && (
                 <div style={{ textAlign: 'center' }}>
                   <button type="button" style={btnG} onClick={() => { setScreen('forgot'); setError(''); }}>Forgot password?</button>
@@ -180,7 +164,7 @@ export default function Auth() {
           </>
         )}
 
-        {/* ── Forgot Password ── */}
+        {/* Forgot Password */}
         {screen === 'forgot' && (
           <>
             <h2 style={{ margin: '0 0 6px', fontSize: 20, color: text }}>🔑 Forgot Password</h2>
@@ -195,7 +179,7 @@ export default function Auth() {
           </>
         )}
 
-        {/* ── Verify OTP ── */}
+        {/* Verify OTP */}
         {screen === 'verify' && (
           <>
             <h2 style={{ margin: '0 0 6px', fontSize: 20, color: text }}>📬 Enter OTP</h2>
@@ -209,7 +193,7 @@ export default function Auth() {
           </>
         )}
 
-        {/* ── Reset Password ── */}
+        {/* Reset Password */}
         {screen === 'reset' && (
           <>
             <h2 style={{ margin: '0 0 6px', fontSize: 20, color: text }}>🔒 New Password</h2>
@@ -222,7 +206,7 @@ export default function Auth() {
           </>
         )}
 
-        {/* ── Success ── */}
+        {/* Success */}
         {screen === 'success' && (
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
