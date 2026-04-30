@@ -47,7 +47,9 @@ exports.checkMCQ = async (req, res) => {
     const { questionId, selectedAnswer } = req.body;
     const question = await Question.findById(questionId);
     if (!question) return res.status(404).json({ message: 'Question not found' });
-    const correct = question.correctAnswer === selectedAnswer;
+    // Normalize: trim whitespace and collapse multiple spaces to fix hidden character issues
+    const normalize = s => (s || '').toString().trim().replace(/\s+/g, ' ');
+    const correct = normalize(question.correctAnswer) === normalize(selectedAnswer);
     res.json({ correct, correctAnswer: question.correctAnswer, explanation: question.explanation });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
@@ -61,14 +63,12 @@ exports.runSQL = async (req, res) => {
     const question = await Question.findById(questionId);
     if (!question) return res.status(404).json({ message: 'Question not found' });
 
-    // Use sql.js (pure JS SQLite — works on all platforms including Render/Linux)
     const initSqlJs = require('sql.js');
     const SQL = await initSqlJs();
     const db = new SQL.Database();
 
     if (question.starterCode) db.run(question.starterCode);
 
-    // Helper: run a query and return array of row objects
     function runQuery(sql) {
       const results = db.exec(sql);
       if (!results || results.length === 0) return [];
@@ -80,7 +80,6 @@ exports.runSQL = async (req, res) => {
       });
     }
 
-    // Run exact matching first
     const exactResults = [];
     let allExactPassed = true;
 
@@ -105,12 +104,10 @@ exports.runSQL = async (req, res) => {
     }
     db.close();
 
-    // If all passed exactly, return immediately
     if (allExactPassed) {
       return res.json({ results: exactResults, allPassed: true, score: exactResults.length, total: question.testCases.length, aiEvaluation: null });
     }
 
-    // Run AI evaluation for partial/failed results
     let aiEval = null;
     if (useAI && process.env.GEMINI_API_KEY) {
       aiEval = await aiEvaluateSQL({
@@ -139,7 +136,6 @@ exports.runSQL = async (req, res) => {
 
 // ── Language Runners ───────────────────────────────────────────────────────
 function runJavaScript(userCode, input) {
-  // Parse JSON string into actual JS value (array, object, number etc.)
   let parsedInput;
   try {
     parsedInput = typeof input === 'string' ? JSON.parse(input) : input;
@@ -202,7 +198,12 @@ exports.runDSA = async (req, res) => {
     const question = await Question.findById(questionId);
     if (!question) return res.status(404).json({ message: 'Question not found' });
 
-    // Run exact test cases first
+    // Normalize output for comparison: handles 15 vs "15" vs 15.0
+    const normalizeOutput = s => {
+      try { return JSON.stringify(JSON.parse(String(s).trim())); }
+      catch { return String(s).trim(); }
+    };
+
     const exactResults = [];
     let allExactPassed = true;
 
@@ -215,7 +216,7 @@ exports.runDSA = async (req, res) => {
           case 'c': got = runC(userCode, tc.input); break;
           default: got = runJavaScript(userCode, tc.input);
         }
-        const passed = got === tc.expectedOutput;
+        const passed = normalizeOutput(got) === normalizeOutput(tc.expectedOutput);
         if (!passed) allExactPassed = false;
         exactResults.push({ description: tc.description, passed, expected: tc.expectedOutput, got });
       } catch (e) {
@@ -224,12 +225,10 @@ exports.runDSA = async (req, res) => {
       }
     }
 
-    // If all passed exactly, skip AI
     if (allExactPassed) {
       return res.json({ results: exactResults, allPassed: true, score: exactResults.length, total: question.testCases.length, aiEvaluation: null });
     }
 
-    // Run AI evaluation for failed cases
     let aiEval = null;
     if (useAI && process.env.GEMINI_API_KEY) {
       aiEval = await aiEvaluateDSA({
@@ -256,13 +255,12 @@ exports.runDSA = async (req, res) => {
   }
 };
 
-// ── Get Hint (costs 50% of question score) ─────────────────────────────────
+// ── Get Hint ──────────────────────────────────────────────────────────────
 exports.getHint = async (req, res) => {
   try {
     const { questionId, userCode, language } = req.body;
     const question = await Question.findById(questionId);
     if (!question) return res.status(404).json({ message: 'Question not found' });
-
     const hint = await aiGetHint({
       question: question.question,
       topic: question.topic,
@@ -270,7 +268,6 @@ exports.getHint = async (req, res) => {
       userCode,
       language,
     });
-
     res.json({ hint: hint.hint, penalty: '50% score reduction applied' });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
@@ -283,7 +280,6 @@ exports.rateQuestion = async (req, res) => {
     const { questionId, rating } = req.body;
     const userId = req.userId;
     const QuestionRating = require('../models/QuestionRating');
-
     await QuestionRating.findOneAndUpdate(
       { questionId, userId },
       { questionId, userId, rating },
